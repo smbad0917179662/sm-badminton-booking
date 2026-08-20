@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111827">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="S&M Admin">
+<link rel="manifest" href="manifest.webmanifest">
+<title>S&M Badminton Admin</title>
+<style>
+:root{--bg:#f3f4f6;--card:#fff;--text:#111827;--muted:#6b7280;--primary:#111827;--border:#e5e7eb;--blue:#2563eb;--green:#16a34a;--orange:#d97706}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;padding-bottom:84px}
+header{background:#111827;color:#fff;padding:20px 16px calc(20px + env(safe-area-inset-top));position:sticky;top:0;z-index:10}header h1{margin:0;font-size:22px}header p{margin:6px 0 0;color:#cbd5e1;font-size:13px}
+main{max-width:680px;margin:auto;padding:14px}.hero{background:linear-gradient(135deg,#111827,#1f2937);color:#fff;border-radius:18px;padding:18px;margin-bottom:14px}.date{font-size:13px;color:#cbd5e1}.hero strong{display:block;font-size:28px;margin-top:4px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:15px;box-shadow:0 3px 12px #00000008}.stat{min-height:108px}.stat .icon{font-size:26px}.stat .label{color:var(--muted);font-size:13px;margin-top:8px}.stat .value{font-size:26px;font-weight:900;margin-top:2px}.section-title{font-size:17px;font-weight:900;margin:18px 2px 10px}.quick a{display:flex;align-items:center;justify-content:space-between;text-decoration:none;color:inherit;padding:15px 0;border-bottom:1px solid var(--border)}.quick a:last-child{border-bottom:0}.quick .left{display:flex;gap:11px;align-items:center}.quick .emoji{font-size:24px}.quick small{display:block;color:var(--muted);margin-top:2px}.button{display:block;width:100%;padding:14px;border-radius:12px;border:0;background:var(--blue);color:#fff;font-weight:800;text-align:center;text-decoration:none;font-size:16px}.note{font-size:12px;color:var(--muted);line-height:1.5}.bottom{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--border);padding:8px 8px calc(8px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(3,1fr);z-index:20}.bottom a{text-decoration:none;color:#475569;text-align:center;font-size:11px;padding:6px 2px}.bottom b{display:block;font-size:20px}.bottom a.active{color:#111827;font-weight:800}
+@media(min-width:700px){main{padding-top:20px}.grid{grid-template-columns:repeat(4,1fr)}body{padding-bottom:20px}.bottom{display:none}}
+</style>
+</head>
+<body>
+<header><h1>🏸 S&M Badminton Admin</h1><p>ศูนย์ควบคุมสำหรับผู้ดูแล</p></header>
+<main>
+<section class="hero"><div class="date" id="today"></div><strong>จัดการสนามได้เร็วขึ้น</strong><div class="note" style="color:#cbd5e1;margin-top:8px">เปิดหน้านี้จากมือถือเพื่อเข้าหน้า Admin ได้สะดวก</div></section>
+<section class="grid">
+  <div class="card stat"><div class="icon">📅</div><div class="label">ดูตารางการจอง</div><div class="value">วันนี้</div></div>
+  <div class="card stat"><div class="icon">💳</div><div class="label">ตรวจสอบการชำระเงิน</div><div class="value">Admin</div></div>
+</section>
+<h2 class="section-title">เมนูด่วน</h2>
+<section class="card quick">
+  <a href="https://script.google.com/macros/s/AKfycbweoPikUT3Xfqp2l9Oapg6x3FalxEFJztf9FYTcZHoXrx39tUBUUOD-3RV1HGPel95Azw/exec?page=admin">
+    <div class="left"><div class="emoji">📊</div><div><b>หน้า Admin หลัก</b><small>ตารางการจองและจัดการรายการ</small></div></div><span>›</span>
+  </a>
+  <a href="https://script.google.com/macros/s/AKfycbweoPikUT3Xfqp2l9Oapg6x3FalxEFJztf9FYTcZHoXrx39tUBUUOD-3RV1HGPel95Azw/exec?page=admin">
+    <div class="left"><div class="emoji">💳</div><div><b>ตรวจสอบสลิป</b><small>เข้า Admin เพื่อยืนยันการชำระเงิน</small></div></div><span>›</span>
+  </a>
+</section>
+<section class="card" style="margin-top:14px"><a class="button" href="https://script.google.com/macros/s/AKfycbweoPikUT3Xfqp2l9Oapg6x3FalxEFJztf9FYTcZHoXrx39tUBUUOD-3RV1HGPel95Azw/exec?page=admin">เปิดหน้า Admin</a><p class="note" style="margin-bottom:0;margin-top:10px">หน้านี้เป็นทางลัดสำหรับมือถือ โดยระบบจองของลูกค้ายังคงทำงานผ่าน LINE ตามเดิม</p></section>
+</main>
+<nav class="bottom"><a class="active" href="./"><b>🏠</b>หน้าหลัก</a><a href="https://script.google.com/macros/s/AKfycbweoPikUT3Xfqp2l9Oapg6x3FalxEFJztf9FYTcZHoXrx39tUBUUOD-3RV1HGPel95Azw/exec?page=admin"><b>📊</b>Admin</a><a href="https://github.com/smbad0917179662/sm-badminton-booking"><b>⚙️</b>ระบบ</a></nav>
+<script>const d=new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Bangkok'}));document.getElementById('today').textContent=d.toLocaleDateString('th-TH',{weekday:'long',year:'numeric',month:'long',day:'numeric'});if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').catch(()=>{});}</script>
+</body>
+</html>
