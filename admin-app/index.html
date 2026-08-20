@@ -56,22 +56,521 @@ main{max-width:1100px;margin:auto;padding:10px}.hero{background:linear-gradient(
 <nav class="bottom"><a class="active" href="./"><b>📅</b>ตาราง</a><a id="fullAdmin" href="https://script.google.com/macros/s/AKfycbweoPikUT3Xfqp2l9Oapg6x3FalxEFJztf9FYTcZHoXrx39tUBUUOD-3RV1HGPel95Azw/exec?page=admin"><b>📊</b>Admin</a><a href="https://script.google.com/macros/s/AKfycbweoPikUT3Xfqp2l9Oapg6x3FalxEFJztf9FYTcZHoXrx39tUBUUOD-3RV1HGPel95Azw/exec?page=admin#regular"><b>👥</b>ลูกค้า</a><a href="https://script.google.com/macros/s/AKfycbweoPikUT3Xfqp2l9Oapg6x3FalxEFJztf9FYTcZHoXrx39tUBUUOD-3RV1HGPel95Azw/exec?page=admin#qr"><b>⚙️</b>ตั้งค่า</a></nav>
 <script>
 const API='https://script.google.com/macros/s/AKfycbweoPikUT3Xfqp2l9Oapg6x3FalxEFJztf9FYTcZHoXrx39tUBUUOD-3RV1HGPel95Azw/exec';
-const todayTH=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Bangkok',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
-const $=id=>document.getElementById(id);let adminPassword='';let bookings=[];
-function esc(v){return String(v??'').replace(/[&<>\"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[m]));}
-function openingHour(dateStr){const day=new Date(dateStr+'T12:00:00').getDay();return day>=1&&day<=5?11:10;}
-function dateText(s){return new Date(s+'T12:00:00').toLocaleDateString('th-TH',{weekday:'long',year:'numeric',month:'long',day:'numeric'});}
-function slotLabelHour(h){return String(h).padStart(2,'0')+':00–'+String(Number(h)+1).padStart(2,'0')+':00';}
-function statusKey(s){return String(s||'').toLowerCase();}
-function statusText(s){const x=statusKey(s);return x==='paid'?'ชำระแล้ว':x==='regular'?'ลูกค้าประจำ':x==='pending'?'รอตรวจ':x==='rejected'?'ยกเลิก':'จองแล้ว';}
-function renderSchedule(){const date=$('date').value,start=openingHour(date),hours=[];for(let h=start;h<24;h++)hours.push(h);$('openHours').textContent=String(start).padStart(2,'0')+'–24';let html='<div class="cell head">เวลา</div>'+[1,2,3,4].map(c=>`<div class="cell head">🏸 สนาม ${c}</div>`).join('');for(const h of hours){html+=`<div class="cell time">${slotLabelHour(h)}</div>`;for(let c=1;c<=4;c++){const b=bookings.find(x=>String(x.court)===String(c)&&Number(x.hour)===h);if(!b){html+='<div class="cell"><button class="slot past" disabled>ว่าง</button></div>';continue;}const key=statusKey(b.status);const cls=key==='pending'?'pending':key==='paid'?'paid':key==='regular'?'regular':'booked';const payload=encodeURIComponent(JSON.stringify(b));html+=`<div class="cell"><button class="slot ${cls}" onclick="showDetail('${payload}')">${esc(b.name||'จองแล้ว')}<span class="small">${statusText(b.status)}<br>${esc(b.bookingId||'')}</span></button></div>`;}}$('schedule').innerHTML=html;}
-function showDetail(encoded){const b=JSON.parse(decodeURIComponent(encoded));const d=$('detail');d.style.display='block';d.innerHTML=`<h3>📋 รายละเอียดการจอง</h3><div class="detail-grid"><div class="detail-row"><span>ผู้จอง</span><b>${esc(b.name||'-')}</b></div><div class="detail-row"><span>เบอร์โทร</span><b>${esc(b.phone||'-')}</b></div><div class="detail-row"><span>Booking ID</span><b>${esc(b.bookingId||'-')}</b></div><div class="detail-row"><span>สนาม / เวลา</span><b>สนาม ${esc(b.court||'-')} • ${slotLabelHour(b.hour)}</b></div><div class="detail-row"><span>หมายเหตุ</span><b>${esc(b.remark||'-')}</b></div><div class="detail-row"><span>สถานะ</span><b>${statusText(b.status)}</b></div></div><div class="actions">${b.slipUrl?`<a class="blue" target="_blank" href="${esc(b.slipUrl)}">📎 เปิดสลิป</a>`:''}<a class="gray" target="_blank" href="${API}?page=admin&bookingId=${encodeURIComponent(b.bookingId||'')}&date=${encodeURIComponent(String(b.date||'').slice(0,10))}">📊 เปิดรายการเต็ม</a>${statusKey(b.status)==='pending'?`<a class="green" target="_blank" href="${API}?page=admin&bookingId=${encodeURIComponent(b.bookingId||'')}&date=${encodeURIComponent(String(b.date||'').slice(0,10))}">✅ ไปยืนยันชำระ</a>`:''}</div>`;d.scrollIntoView({behavior:'smooth',block:'nearest'});}
-async function login(){const password=$('adminPassword').value.trim();$('loginError').style.display='none';if(!password){$('loginError').textContent='กรุณากรอกรหัส Admin';$('loginError').style.display='block';return;}try{const body=new URLSearchParams({action:'adminLogin',password});const x=await fetch(API,{method:'POST',body}).then(r=>r.json());if(!x.success)throw new Error(x.message||'เข้าสู่ระบบไม่สำเร็จ');adminPassword=password;sessionStorage.setItem('smAdminPassword',password);$('loginView').style.display='none';$('appView').style.display='block';loadSchedule();}catch(e){$('loginError').textContent='❌ '+e.message;$('loginError').style.display='block';}}
-async function loadSchedule(){const date=$('date').value;$('today').textContent=dateText(date);$('schedule').innerHTML='<div class="msg">กำลังโหลดตาราง...</div>';try{const body=new URLSearchParams({action:'mobileAdminBookings',admin:adminPassword,date});const x=await fetch(API,{method:'POST',body}).then(r=>r.json());if(!x.success)throw new Error(x.message||'โหลดตารางไม่สำเร็จ');bookings=Array.isArray(x.bookings)?x.bookings:[];const active=bookings.filter(b=>statusKey(b.status)!=='rejected');$('countAll').textContent=active.length;$('countPending').textContent=active.filter(b=>statusKey(b.status)==='pending').length;$('countPaid').textContent=active.filter(b=>['paid','regular'].includes(statusKey(b.status))).length;renderSchedule();}catch(e){$('schedule').innerHTML='<div class="msg">❌ '+esc(e.message)+'</div>';}}
-function moveDate(delta){const d=new Date($('date').value+'T12:00:00');d.setDate(d.getDate()+delta);$('date').value=d.toISOString().slice(0,10);loadSchedule();}
-function goToday(){$('date').value=todayTH;loadSchedule();}
-function restoreSession(){const saved=sessionStorage.getItem('smAdminPassword');if(saved){adminPassword=saved;$('loginView').style.display='none';$('appView').style.display='block';loadSchedule();}else{$('date').value=todayTH;}}
-$('date').value=todayTH;restoreSession();if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').catch(()=>{});}
+
+const $=id=>document.getElementById(id);
+
+let adminPassword='';
+let bookings=[];
+let loading=false;
+const cache=new Map();
+
+function pad2(n){
+  return String(n).padStart(2,'0');
+}
+
+function bangkokToday(){
+  const parts=new Intl.DateTimeFormat('en-GB',{
+    timeZone:'Asia/Bangkok',
+    year:'numeric',
+    month:'2-digit',
+    day:'2-digit'
+  }).formatToParts(new Date());
+
+  const map={};
+  parts.forEach(p=>map[p.type]=p.value);
+
+  return `${map.year}-${map.month}-${map.day}`;
+}
+
+function parseDateLocal(s){
+  return new Date(`${s}T12:00:00`);
+}
+
+function formatDateInput(d){
+  return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
+}
+
+function dateText(s){
+  if(!s) return '';
+  return parseDateLocal(s).toLocaleDateString('th-TH',{
+    weekday:'long',
+    year:'numeric',
+    month:'long',
+    day:'numeric'
+  });
+}
+
+function openingHour(dateStr){
+  const day=parseDateLocal(dateStr).getDay();
+  return day>=1 && day<=5 ? 11 : 10;
+}
+
+function slotLabelHour(h){
+  const n=Number(h);
+  return `${pad2(n)}:00–${pad2(n+1)}:00`;
+}
+
+function esc(v){
+  return String(v ?? '').replace(/[&<>"']/g,m=>({
+    '&':'&amp;',
+    '<':'&lt;',
+    '>':'&gt;',
+    '"':'&quot;',
+    "'":'&#39;'
+  }[m]));
+}
+
+function statusKey(s){
+  return String(s || '').trim().toLowerCase();
+}
+
+function statusText(s){
+  const x=statusKey(s);
+  return x==='paid'
+    ? 'ชำระแล้ว'
+    : x==='regular'
+      ? 'ลูกค้าประจำ'
+      : x==='pending'
+        ? 'รอตรวจ'
+        : x==='rejected'
+          ? 'ยกเลิก'
+          : 'จองแล้ว';
+}
+
+function getSavedPassword(){
+  return String(
+    sessionStorage.getItem('smAdminPassword') || ''
+  ).trim();
+}
+
+function setAppVisible(){
+  $('loginView').style.display='none';
+  $('appView').style.display='block';
+}
+
+function setLoginVisible(){
+  $('appView').style.display='none';
+  $('loginView').style.display='block';
+}
+
+async function parseResponse(response){
+  const text=await response.text();
+
+  try{
+    return JSON.parse(text);
+  }catch(e){
+    throw new Error(
+      `ระบบตอบกลับผิดรูปแบบ (${response.status})`
+    );
+  }
+}
+
+async function login(){
+  const password=$('adminPassword').value.trim();
+
+  $('loginError').style.display='none';
+
+  if(!password){
+    $('loginError').textContent='กรุณากรอกรหัส Admin';
+    $('loginError').style.display='block';
+    return;
+  }
+
+  try{
+    const body=new URLSearchParams({
+      action:'adminLogin',
+      password
+    });
+
+    const result=await fetch(API,{
+      method:'POST',
+      body
+    }).then(parseResponse);
+
+    if(!result.success){
+      throw new Error(
+        result.message || 'เข้าสู่ระบบไม่สำเร็จ'
+      );
+    }
+
+    adminPassword=password;
+    sessionStorage.setItem(
+      'smAdminPassword',
+      password
+    );
+
+    setAppVisible();
+
+    await loadSchedule(true);
+
+  }catch(e){
+    $('loginError').textContent='❌ ' + e.message;
+    $('loginError').style.display='block';
+  }
+}
+
+function showScheduleMessage(message){
+  $('schedule').innerHTML=
+    `<div class="msg">${esc(message)}</div>`;
+}
+
+async function loadSchedule(force=false){
+
+  if(loading) return;
+
+  let date=$('date').value;
+
+  if(!date){
+    date=bangkokToday();
+    $('date').value=date;
+  }
+
+  adminPassword=
+    getSavedPassword() || adminPassword;
+
+  if(!adminPassword){
+    setLoginVisible();
+    showScheduleMessage('กรุณาเข้าสู่ระบบ');
+    return;
+  }
+
+  $('today').textContent=dateText(date);
+
+  const start=openingHour(date);
+  $('openHours').textContent=
+    `${pad2(start)}–24`;
+
+  const key=`mobileSchedule:${date}`;
+
+  if(!force && cache.has(key)){
+    bookings=cache.get(key);
+    updateSummary();
+    renderSchedule();
+    return;
+  }
+
+  loading=true;
+
+  if(!bookings.length){
+    showScheduleMessage('กำลังโหลดตาราง...');
+  }
+
+  try{
+
+    const body=new URLSearchParams({
+      action:'mobileAdminBookings',
+      admin:adminPassword,
+      date
+    });
+
+    const result=await fetch(API,{
+      method:'POST',
+      body
+    }).then(parseResponse);
+
+    if(!result.success){
+
+      const msg=String(result.message || '');
+
+      if(
+        /สิทธิ์|admin|รหัส/i.test(msg)
+      ){
+        sessionStorage.removeItem(
+          'smAdminPassword'
+        );
+        adminPassword='';
+        setLoginVisible();
+      }
+
+      throw new Error(
+        msg || 'โหลดตารางไม่สำเร็จ'
+      );
+    }
+
+    bookings=Array.isArray(result.bookings)
+      ? result.bookings
+      : [];
+
+    cache.set(key,bookings);
+
+    updateSummary();
+    renderSchedule();
+
+  }catch(e){
+
+    showScheduleMessage(
+      '❌ ' + e.message
+    );
+
+  }finally{
+    loading=false;
+  }
+}
+
+function updateSummary(){
+
+  const active=
+    bookings.filter(
+      b=>statusKey(b.status)!=='rejected'
+    );
+
+  $('countAll').textContent=
+    active.length;
+
+  $('countPending').textContent=
+    active.filter(
+      b=>statusKey(b.status)==='pending'
+    ).length;
+
+  $('countPaid').textContent=
+    active.filter(
+      b=>['paid','regular'].includes(
+        statusKey(b.status)
+      )
+    ).length;
+}
+
+function renderSchedule(){
+
+  const date=$('date').value;
+  const start=openingHour(date);
+
+  const hours=[];
+
+  for(
+    let h=start;
+    h<24;
+    h++
+  ){
+    hours.push(h);
+  }
+
+  const bySlot=new Map();
+
+  bookings.forEach(b=>{
+    const key=
+      `${String(b.court)}|${Number(b.hour)}`;
+
+    bySlot.set(key,b);
+  });
+
+  let html=
+    '<div class="cell head">เวลา</div>' +
+    [1,2,3,4]
+      .map(
+        c=>`<div class="cell head">🏸 สนาม ${c}</div>`
+      )
+      .join('');
+
+  for(const h of hours){
+
+    html+=
+      `<div class="cell time">${slotLabelHour(h)}</div>`;
+
+    for(let c=1;c<=4;c++){
+
+      const b=
+        bySlot.get(`${c}|${h}`);
+
+      if(!b){
+
+        html+=
+          '<div class="cell">' +
+          '<button class="slot past" disabled>' +
+          'ว่าง' +
+          '</button>' +
+          '</div>';
+
+        continue;
+      }
+
+      const key=statusKey(b.status);
+
+      const cls=
+        key==='pending'
+          ? 'pending'
+          : key==='paid'
+            ? 'paid'
+            : key==='regular'
+              ? 'regular'
+              : 'booked';
+
+      const payload=
+        encodeURIComponent(
+          JSON.stringify(b)
+        );
+
+      html+=
+        `<div class="cell">` +
+        `<button class="slot ${cls}" ` +
+        `onclick="showDetail('${payload}')">` +
+        `${esc(b.name || 'จองแล้ว')}` +
+        `<span class="small">` +
+        `${statusText(b.status)}` +
+        `<br>` +
+        `${esc(b.bookingId || '')}` +
+        `</span>` +
+        `</button>` +
+        `</div>`;
+    }
+  }
+
+  $('schedule').innerHTML=html;
+}
+
+function showDetail(encoded){
+
+  const b=
+    JSON.parse(
+      decodeURIComponent(encoded)
+    );
+
+  const d=$('detail');
+
+  d.style.display='block';
+
+  const adminUrl=
+    `${API}` +
+    `?page=admin` +
+    `&date=${encodeURIComponent(
+      String(b.date || '').slice(0,10)
+    )}` +
+    `&bookingId=${encodeURIComponent(
+      b.bookingId || ''
+    )}`;
+
+  d.innerHTML=
+    `<h3>📋 รายละเอียดการจอง</h3>` +
+    `<div class="detail-grid">` +
+
+      `<div class="detail-row">` +
+        `<span>ผู้จอง</span>` +
+        `<b>${esc(b.name || '-')}</b>` +
+      `</div>` +
+
+      `<div class="detail-row">` +
+        `<span>เบอร์โทร</span>` +
+        `<b>${esc(b.phone || '-')}</b>` +
+      `</div>` +
+
+      `<div class="detail-row">` +
+        `<span>Booking ID</span>` +
+        `<b>${esc(b.bookingId || '-')}</b>` +
+      `</div>` +
+
+      `<div class="detail-row">` +
+        `<span>สนาม / เวลา</span>` +
+        `<b>สนาม ${esc(b.court || '-')} • ` +
+        `${slotLabelHour(b.hour)}</b>` +
+      `</div>` +
+
+      `<div class="detail-row">` +
+        `<span>หมายเหตุ</span>` +
+        `<b>${esc(b.remark || '-')}</b>` +
+      `</div>` +
+
+      `<div class="detail-row">` +
+        `<span>สถานะ</span>` +
+        `<b>${statusText(b.status)}</b>` +
+      `</div>` +
+
+    `</div>` +
+
+    `<div class="actions">` +
+
+      (
+        b.slipUrl
+          ? `<a class="blue" ` +
+            `target="_blank" rel="noopener" ` +
+            `href="${esc(b.slipUrl)}">` +
+            `📎 เปิดสลิป</a>`
+          : ''
+      ) +
+
+      `<a class="gray" ` +
+        `target="_blank" rel="noopener" ` +
+        `href="${adminUrl}">` +
+        `📊 เปิดรายการเต็ม</a>` +
+
+      (
+        statusKey(b.status)==='pending'
+          ? `<a class="green" ` +
+            `target="_blank" rel="noopener" ` +
+            `href="${adminUrl}">` +
+            `✅ ไปยืนยันชำระ</a>`
+          : ''
+      ) +
+
+    `</div>`;
+
+  d.scrollIntoView({
+    behavior:'smooth',
+    block:'nearest'
+  });
+}
+
+function moveDate(delta){
+
+  const current=
+    $('date').value || bangkokToday();
+
+  const d=
+    parseDateLocal(current);
+
+  d.setDate(
+    d.getDate()+delta
+  );
+
+  $('date').value=
+    formatDateInput(d);
+
+  loadSchedule(false);
+}
+
+function goToday(){
+
+  $('date').value=
+    bangkokToday();
+
+  loadSchedule(false);
+}
+
+function restoreSession(){
+
+  $('date').value=
+    bangkokToday();
+
+  adminPassword=
+    getSavedPassword();
+
+  if(adminPassword){
+
+    setAppVisible();
+
+    loadSchedule(false);
+
+  }else{
+
+    setLoginVisible();
+
+  }
+}
+
+$('date').addEventListener(
+  'change',
+  ()=>loadSchedule(false)
+);
+
+$('date').value=
+  bangkokToday();
+
+restoreSession();
+
+if('serviceWorker' in navigator){
+  navigator.serviceWorker
+    .register('./sw.js')
+    .catch(()=>{});
+}
 </script>
 </body>
 </html>
