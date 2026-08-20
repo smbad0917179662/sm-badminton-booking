@@ -11,46 +11,59 @@
 <title>S&M Badminton Admin</title>
 <style>
 :root{--bg:#f3f4f6;--card:#fff;--text:#111827;--muted:#6b7280;--primary:#111827;--border:#e5e7eb;--blue:#2563eb;--green:#16a34a;--orange:#d97706;--red:#dc2626}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;padding-bottom:86px}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;padding-bottom:86px}button,input{font:inherit}
 header{background:#111827;color:#fff;padding:18px 16px calc(18px + env(safe-area-inset-top));position:sticky;top:0;z-index:10}header h1{margin:0;font-size:22px}header p{margin:5px 0 0;color:#cbd5e1;font-size:13px}
-main{max-width:760px;margin:auto;padding:12px}.hero{background:linear-gradient(135deg,#111827,#1f2937);color:#fff;border-radius:18px;padding:18px;margin-bottom:12px}.date{font-size:13px;color:#cbd5e1}.hero strong{display:block;font-size:26px;margin-top:4px}.hero .sub{font-size:12px;color:#cbd5e1;margin-top:7px;line-height:1.45}
-.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:14px;box-shadow:0 3px 12px #00000008}.stat{min-height:106px}.stat .icon{font-size:25px}.stat .label{color:var(--muted);font-size:12px;margin-top:7px}.stat .value{font-size:25px;font-weight:900;margin-top:2px}.stat .hint{font-size:11px;color:var(--muted);margin-top:3px}
-.section-title{font-size:17px;font-weight:900;margin:17px 2px 9px}.quick a{display:flex;align-items:center;justify-content:space-between;text-decoration:none;color:inherit;padding:14px 0;border-bottom:1px solid var(--border)}.quick a:last-child{border-bottom:0}.quick .left{display:flex;gap:11px;align-items:center}.quick .emoji{font-size:23px}.quick small{display:block;color:var(--muted);margin-top:2px;font-size:11px}.arrow{font-size:24px;color:#94a3b8}.button{display:block;width:100%;padding:14px;border-radius:12px;border:0;background:var(--blue);color:#fff;font-weight:800;text-align:center;text-decoration:none;font-size:16px}.button.secondary{background:#eef2ff;color:#1d4ed8}.note{font-size:12px;color:var(--muted);line-height:1.5}.pill{display:inline-flex;align-items:center;gap:6px;padding:7px 10px;border-radius:999px;font-size:11px;font-weight:800;margin-top:9px}.pill.green{background:#dcfce7;color:#166534}.pill.orange{background:#fef3c7;color:#92400e}.pill.blue{background:#dbeafe;color:#1d4ed8}.bottom{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--border);padding:7px 8px calc(7px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(4,1fr);z-index:20}.bottom a{text-decoration:none;color:#475569;text-align:center;font-size:10px;padding:5px 2px}.bottom b{display:block;font-size:19px;margin-bottom:1px}.bottom a.active{color:#111827;font-weight:800}
-@media(min-width:700px){main{padding:20px}.grid{grid-template-columns:repeat(4,1fr)}body{padding-bottom:20px}.bottom{display:none}}
+main{max-width:980px;margin:auto;padding:12px}.hero{background:linear-gradient(135deg,#111827,#1f2937);color:#fff;border-radius:18px;padding:16px;margin-bottom:12px}.date{font-size:13px;color:#cbd5e1}.hero strong{display:block;font-size:25px;margin-top:4px}.hero .sub{font-size:12px;color:#cbd5e1;margin-top:7px;line-height:1.45}
+.toolbar{display:flex;gap:7px;align-items:center;margin:0 0 12px;flex-wrap:wrap}.toolbar button{border:1px solid var(--border);background:#fff;border-radius:10px;padding:10px 12px;font-weight:800}.toolbar input{flex:1;min-width:150px;height:42px;border:1px solid var(--border);border-radius:10px;padding:0 10px;background:#fff}.toolbar .primary{background:var(--blue);color:#fff;border-color:var(--blue)}
+.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}.stat{background:#fff;border:1px solid var(--border);border-radius:14px;padding:12px}.stat .label{font-size:11px;color:var(--muted)}.stat .value{font-size:22px;font-weight:900;margin-top:2px}
+.table-wrap{background:#fff;border:1px solid var(--border);border-radius:16px;overflow:auto;-webkit-overflow-scrolling:touch}.schedule{min-width:820px;display:grid;grid-template-columns:78px repeat(4,minmax(165px,1fr))}.cell{border-right:1px solid var(--border);border-bottom:1px solid var(--border);padding:6px;text-align:center}.head{position:sticky;top:0;z-index:2;background:#111827;color:#fff;font-weight:900;padding:10px 4px}.time{background:#f8fafc;font-weight:900;color:#475569;font-size:12px;position:sticky;left:0;z-index:1}.slot{width:100%;min-height:56px;border-radius:10px;border:1px solid #bbf7d0;background:#f0fdf4;color:#166534;font-weight:900;cursor:pointer;padding:6px;font-size:11px}.slot.booked{background:#f8fafc;border-color:#d1d5db;color:#475569}.slot.pending{background:#fff7ed;border-color:#fdba74;color:#9a3412}.slot.paid{background:#dcfce7;border-color:#86efac;color:#166534}.slot.rejected{background:#fee2e2;border-color:#fecaca;color:#991b1b}.slot.past{background:#f3f4f6;border-color:#e5e7eb;color:#9ca3af;cursor:not-allowed}.slot .small{display:block;font-size:9px;font-weight:700;margin-top:3px;opacity:.9}.msg{padding:16px;color:var(--muted);text-align:center}.detail{margin-top:12px;background:#fff;border:1px solid var(--border);border-radius:16px;padding:14px}.detail h3{margin:0 0 8px}.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:13px}.detail-row{background:#f8fafc;border-radius:10px;padding:9px}.detail-row span{display:block;color:var(--muted);font-size:11px;margin-bottom:2px}.actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}.actions button{border:0;border-radius:10px;padding:11px 13px;font-weight:800}.blue{background:var(--blue);color:#fff}.green{background:#16a34a;color:#fff}.gray{background:#eef2f7;color:#374151}.quick{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:12px}.quick a{text-decoration:none;color:#111827;background:#fff;border:1px solid var(--border);border-radius:12px;padding:12px;font-weight:800}.quick small{display:block;color:var(--muted);font-weight:500;margin-top:2px}.bottom{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--border);padding:7px 8px calc(7px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(4,1fr);z-index:20}.bottom a{text-decoration:none;color:#475569;text-align:center;font-size:10px;padding:5px 2px}.bottom b{display:block;font-size:19px;margin-bottom:1px}.bottom a.active{color:#111827;font-weight:800}
+@media(max-width:699px){.toolbar{display:grid;grid-template-columns:44px 1fr 44px 1fr;gap:6px}.toolbar button{padding:9px 6px}.toolbar input{width:100%;min-width:0}.summary{grid-template-columns:repeat(3,1fr)}main{padding:9px}.schedule{min-width:760px;grid-template-columns:66px repeat(4,158px)}.slot{min-height:58px;font-size:10px}.detail-grid{grid-template-columns:1fr 1fr}.quick{grid-template-columns:1fr}}
+@media(min-width:700px){main{padding:20px}.bottom{display:none}}
 </style>
 </head>
 <body>
-<header><h1>🏸 S&M Badminton Admin</h1><p>ศูนย์ควบคุมสำหรับผู้ดูแล</p></header>
+<header><h1>🏸 S&M Badminton Admin</h1><p>ตาราง 4 สนามสำหรับผู้ดูแล • ลูกค้าจองผ่าน LINE</p></header>
 <main>
-<section class="hero"><div class="date" id="today"></div><strong>จัดการสนามได้เร็วขึ้น</strong><div class="sub">แอปนี้เป็นทางลัดสำหรับผู้ดูแลบนมือถือ โดยใช้ข้อมูลและหน้า Admin หลักจาก Apps Script ชุดเดิม</div><span class="pill green">● ระบบลูกค้าจองผ่าน LINE ตามเดิม</span></section>
-<section class="grid">
-  <div class="card stat"><div class="icon">📅</div><div class="label">ตารางการจอง</div><div class="value">ดูวันนี้</div><div class="hint">สนาม 1–4 และเวลา</div></div>
-  <div class="card stat"><div class="icon">💳</div><div class="label">ตรวจการชำระเงิน</div><div class="value">เปิด Admin</div><div class="hint">ดูสลิปและยืนยัน</div></div>
-  <div class="card stat"><div class="icon">👥</div><div class="label">ลูกค้าประจำ</div><div class="value">จัดการ</div><div class="hint">ค้นหาและลงจอง</div></div>
-  <div class="card stat"><div class="icon">🏦</div><div class="label">QR รับเงิน</div><div class="value">ตั้งค่า</div><div class="hint">เลือก QR ที่ใช้งาน</div></div>
+<section class="hero"><div class="date" id="today"></div><strong>ตารางการจอง</strong><div class="sub">แสดงสนาม 1–4 พร้อมกัน เลื่อนซ้าย–ขวาในมือถือเพื่อดูข้อมูลครบ</div></section>
+<section class="toolbar">
+  <button onclick="moveDate(-1)">◀</button>
+  <input id="date" type="date">
+  <button onclick="moveDate(1)">▶</button>
+  <button class="primary" onclick="goToday()">วันนี้</button>
+  <button onclick="loadSchedule()">🔄</button>
 </section>
-<h2 class="section-title">เมนูด่วน</h2>
-<section class="card quick">
-  <a href="https://script.google.com/macros/s/AKfycbweoPikUT3Xfqp2l9Oapg6x3FalxEFJztf9FYTcZHoXrx39tUBUUOD-3RV1HGPel95Azw/exec?page=admin">
-    <div class="left"><div class="emoji">📊</div><div><b>หน้า Admin หลัก</b><small>ตารางการจองและจัดการรายการ</small></div></div><span class="arrow">›</span>
-  </a>
-  <a href="https://script.google.com/macros/s/AKfycbweoPikUT3Xfqp2l9Oapg6x3FalxEFJztf9FYTcZHoXrx39tUBUUOD-3RV1HGPel95Azw/exec?page=admin#payments">
-    <div class="left"><div class="emoji">💳</div><div><b>ตรวจสอบการชำระเงิน</b><small>เข้าสู่ Admin เพื่อดูสลิปและยืนยัน</small></div></div><span class="arrow">›</span>
-  </a>
-  <a href="https://script.google.com/macros/s/AKfycbweoPikUT3Xfqp2l9Oapg6x3FalxEFJztf9FYTcZHoXrx39tUBUUOD-3RV1HGPel95Azw/exec?page=admin#regular">
-    <div class="left"><div class="emoji">👥</div><div><b>ลูกค้าประจำ</b><small>ค้นหาและจัดการลูกค้าประจำ</small></div></div><span class="arrow">›</span>
-  </a>
-  <a href="https://script.google.com/macros/s/AKfycbweoPikUT3Xfqp2l9Oapg6x3FalxEFJztf9FYTcZHoXrx39tUBUUOD-3RV1HGPel95Azw/exec?page=admin#qr">
-    <div class="left"><div class="emoji">🏦</div><div><b>จัดการ QR รับเงิน</b><small>เลือก QR ที่กำลังใช้งาน</small></div></div><span class="arrow">›</span>
-  </a>
+<section class="summary">
+  <div class="stat"><div class="label">ทั้งหมด</div><div class="value" id="countAll">-</div></div>
+  <div class="stat"><div class="label">รอตรวจสอบ</div><div class="value" id="countPending">-</div></div>
+  <div class="stat"><div class="label">ชำระแล้ว</div><div class="value" id="countPaid">-</div></div>
 </section>
-<section class="card" style="margin-top:12px"><div style="display:grid;gap:9px"><a class="button" href="https://script.google.com/macros/s/AKfycbweoPikUT3Xfqp2l9Oapg6x3FalxEFJztf9FYTcZHoXrx39tUBUUOD-3RV1HGPel95Azw/exec?page=admin">เปิดหน้า Admin เต็ม</a><a class="button secondary" href="https://smbad0917179662.github.io/sm-badminton-booking/">เปิดหน้าจองลูกค้า (ตรวจสอบเท่านั้น)</a></div><p class="note" style="margin-bottom:0;margin-top:10px">ลูกค้ายังคงจองผ่าน LINE เท่านั้น แอปนี้มีไว้สำหรับผู้ดูแล</p></section>
+<section class="table-wrap"><div id="schedule" class="schedule"><div class="msg">กำลังโหลดตาราง...</div></div></section>
+<section id="detail" class="detail" style="display:none"></section>
+<section class="quick">
+  <a href="https://script.google.com/macros/s/AKfycbweoPikUT3Xfqp2l9Oapg6x3FalxEFJztf9FYTcZHoXrx39tUBUUOD-3RV1HGPel95Azw/exec?page=admin">📊<small>เปิด Admin เต็ม</small></a>
+  <a href="https://script.google.com/macros/s/AKfycbweoPikUT3Xfqp2l9Oapg6x3FalxEFJztf9FYTcZHoXrx39tUBUUOD-3RV1HGPel95Azw/exec?page=admin#regular">👥<small>ลูกค้าประจำ</small></a>
+  <a href="https://script.google.com/macros/s/AKfycbweoPikUT3Xfqp2l9Oapg6x3FalxEFJztf9FYTcZHoXrx39tUBUUOD-3RV1HGPel95Azw/exec?page=admin#qr">🏦<small>จัดการ QR</small></a>
+  <a href="https://smbad0917179662.github.io/sm-badminton-booking/">🔗<small>หน้าจองลูกค้า</small></a>
+</section>
 </main>
-<nav class="bottom"><a class="active" href="./"><b>🏠</b>หน้าหลัก</a><a href="https://script.google.com/macros/s/AKfycbweoPikUT3Xfqp2l9Oapg6x3FalxEFJztf9FYTcZHoXrx39tUBUUOD-3RV1HGPel95Azw/exec?page=admin"><b>📊</b>Admin</a><a href="https://script.google.com/macros/s/AKfycbweoPikUT3Xfqp2l9Oapg6x3FalxEFJztf9FYTcZHoXrx39tUBUUOD-3RV1HGPel95Azw/exec?page=admin#regular"><b>👥</b>ลูกค้าประจำ</a><a href="https://script.google.com/macros/s/AKfycbweoPikUT3Xfqp2l9Oapg6x3FalxEFJztf9FYTcZHoXrx39tUBUUOD-3RV1HGPel95Azw/exec?page=admin#qr"><b>⚙️</b>ตั้งค่า</a></nav>
+<nav class="bottom"><a class="active" href="./"><b>📅</b>ตาราง</a><a href="https://script.google.com/macros/s/AKfycbweoPikUT3Xfqp2l9Oapg6x3FalxEFJztf9FYTcZHoXrx39tUBUUOD-3RV1HGPel95Azw/exec?page=admin"><b>📊</b>Admin</a><a href="https://script.google.com/macros/s/AKfycbweoPikUT3Xfqp2l9Oapg6x3FalxEFJztf9FYTcZHoXrx39tUBUUOD-3RV1HGPel95Azw/exec?page=admin#regular"><b>👥</b>ลูกค้า</a><a href="https://script.google.com/macros/s/AKfycbweoPikUT3Xfqp2l9Oapg6x3FalxEFJztf9FYTcZHoXrx39tUBUUOD-3RV1HGPel95Azw/exec?page=admin#qr"><b>⚙️</b>ตั้งค่า</a></nav>
 <script>
-const d=new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Bangkok'}));
-document.getElementById('today').textContent=d.toLocaleDateString('th-TH',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
-if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').catch(()=>{});}
+const API='https://script.google.com/macros/s/AKfycbweoPikUT3Xfqp2l9Oapg6x3FalxEFJztf9FYTcZHoXrx39tUBUUOD-3RV1HGPel95Azw/exec';
+const todayTH=new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Bangkok'});
+const $=id=>document.getElementById(id); let bookings=[];
+$('date').value=todayTH;
+function openingHour(dateStr){const day=new Date(dateStr+'T12:00:00').getDay();return day>=1&&day<=5?11:10;}
+function dateText(s){const d=new Date(s+'T12:00:00');return d.toLocaleDateString('th-TH',{weekday:'long',year:'numeric',month:'long',day:'numeric'});}
+function statusClass(s){s=String(s||'').toLowerCase();if(s==='paid'||s==='regular')return 'paid';if(s==='pending')return 'pending';if(s==='rejected'||s==='cancelled')return 'rejected';return 'booked';}
+function statusText(s){s=String(s||'').toLowerCase();if(s==='paid')return 'ชำระแล้ว';if(s==='regular')return 'ลูกค้าประจำ';if(s==='pending')return 'รอตรวจสอบ';if(s==='rejected'||s==='cancelled')return 'ยกเลิก';return s||'จองแล้ว';}
+function renderSchedule(){const date=$('date').value,start=openingHour(date);let html='<div class="cell head">เวลา</div>'+[1,2,3,4].map(c=>`<div class="cell head">🏸 สนาม ${c}</div>`).join('');for(let h=start;h<24;h++){html+=`<div class="cell time">${String(h).padStart(2,'0')}:00–${String(h+1).padStart(2,'0')}:00</div>`;for(let c=1;c<=4;c++){const list=bookings.filter(b=>String(b.court)===String(c)&&Number(b.hour)===h&&String(b.status||'').toLowerCase()!=='rejected');let b=list[0];if(!b){html+='<div class="cell"><button class="slot past" disabled>ว่าง</button></div>';continue;}const cls=statusClass(b.status);html+=`<div class="cell"><button class="slot ${cls}" onclick="showDetail(${JSON.stringify(b).replaceAll('&quot;','&amp;')})">${escapeHtml(b.name||'จองแล้ว')}<span class="small">${statusText(b.status)} • ${escapeHtml(b.bookingId||'')}</span></button></div>`;}}$('schedule').innerHTML=html;}
+function escapeHtml(v){return String(v??'').replace(/[&<>\"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[m]));}
+function showDetail(b){const d=$('detail');d.style.display='block';d.innerHTML=`<h3>📋 รายละเอียดการจอง</h3><div class="detail-grid"><div class="detail-row"><span>ผู้จอง</span><b>${escapeHtml(b.name||'-')}</b></div><div class="detail-row"><span>เบอร์โทร</span><b>${escapeHtml(b.phone||'-')}</b></div><div class="detail-row"><span>Booking ID</span><b>${escapeHtml(b.bookingId||'-')}</b></div><div class="detail-row"><span>สนาม / เวลา</span><b>สนาม ${escapeHtml(b.court||'-')} • ${String(b.hour).padStart(2,'0')}:00–${String(Number(b.hour)+1).padStart(2,'0')}:00</b></div><div class="detail-row"><span>ยอดรวม</span><b>${Number(b.total||0).toLocaleString('th-TH')} บาท</b></div><div class="detail-row"><span>สถานะ</span><b>${statusText(b.status)}</b></div></div><div class="actions">${b.slipUrl?`<button class="blue" onclick="window.open('${escapeHtml(b.slipUrl)}','_blank')">📎 เปิดสลิป</button>`:''}<a class="gray" style="text-decoration:none;display:inline-flex;align-items:center" href="${API}?page=admin&bookingId=${encodeURIComponent(b.bookingId||'')}&date=${encodeURIComponent(String(b.date||'').slice(0,10))}">📊 เปิดรายการใน Admin</a></div>`;d.scrollIntoView({behavior:'smooth',block:'nearest'});}
+async function loadSchedule(){const date=$('date').value; $('today').textContent=dateText(date);$('schedule').innerHTML='<div class="msg">กำลังโหลดตาราง...</div>';try{const x=await fetch(API+'?date='+encodeURIComponent(date)+'&t='+Date.now(),{cache:'no-store'}).then(r=>r.json());if(!x||!Array.isArray(x.bookings))throw new Error(x?.message||'โหลดข้อมูลไม่สำเร็จ');bookings=x.bookings;const active=bookings.filter(b=>String(b.status||'').toLowerCase()!=='rejected');$('countAll').textContent=active.length;$('countPending').textContent=active.filter(b=>String(b.status||'').toLowerCase()==='pending').length;$('countPaid').textContent=active.filter(b=>['paid','regular'].includes(String(b.status||'').toLowerCase())).length;renderSchedule();}catch(e){$('schedule').innerHTML='<div class="msg">❌ '+escapeHtml(e.message)+'</div>';}}
+function moveDate(n){const d=new Date($('date').value+'T12:00:00');d.setDate(d.getDate()+n);$('date').value=d.toISOString().slice(0,10);loadSchedule();}
+function goToday(){$('date').value=todayTH;loadSchedule();}
+$('date').addEventListener('change',loadSchedule);
+if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').catch(()=>{});}loadSchedule();
 </script>
 </body>
 </html>
