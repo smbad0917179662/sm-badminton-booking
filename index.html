@@ -31,6 +31,22 @@ async function initLINE(){try{await liff.init({liffId:LIFF_ID});if(!liff.isLogge
 async function loadPaymentQR(){const box=$('qrBox'),bank=$('qrBankName');box.innerHTML='<div class="qr-placeholder">กำลังโหลด QR...</div>';try{const x=await fetch(API+'?action=getActivePaymentQR&t='+Date.now(),{cache:'no-store'}).then(r=>r.json());if(!x.success)throw new Error(x.message||'ยังไม่มี QR');const dataUrl=x.dataUrl||x.qr||x.url;if(!dataUrl)throw new Error('ไม่พบข้อมูล QR');paymentQR=dataUrl;box.innerHTML='<img id="paymentQR" alt="QR Code สำหรับชำระเงิน">';$('paymentQR').src=dataUrl;bank.textContent=x.bankName||''}catch(e){paymentQR=null;box.innerHTML='<div class="qr-placeholder">❌ โหลด QR ไม่สำเร็จ</div>'}}
 function changeDate(days){const d=new Date($('date').value+'T12:00:00');d.setDate(d.getDate()+days);const nd=d.toISOString().slice(0,10);if(nd<todayTH)return;$('date').value=nd;selected=[];load()}
 $('date').addEventListener('change',()=>{selected=[];load()});$('refresh').onclick=load;$('cancel').onclick=()=>{$('modal').style.display='none'};$('continueBtn').onclick=()=>{if(!selected.length)return;const total=selected.length*PRICE,g=groupSelected();$('selectionInfo').textContent='วันที่ '+$('date').value+' • รวม '+selected.length+' ชั่วโมง';$('selectedList').innerHTML=Object.keys(g).map(c=>`<div class="selected-group"><div class="group-title">🏸 สนาม ${c}</div>${g[c].sort((a,b)=>a-b).map(h=>`<div class="selected-row"><span>⏰ ${String(h).padStart(2,'0')}:00–${String(h+1).padStart(2,'0')}:00</span><b>170 บาท</b></div>`).join('')}</div>`).join('');$('modalTotal').textContent='รวม '+total.toLocaleString()+' บาท';$('payAmount').textContent=total.toLocaleString()+' บาท';loadPaymentQR();$('modal').style.display='flex'};
-async function book(){const name=$('name').value.trim(),phone=$('phone').value.trim(),file=$('slip').files[0];if(!name||!phone||!file)return alert('กรุณากรอกชื่อ เบอร์โทร และแนบสลิป');if(!selected.length)return alert('กรุณาเลือกเวลา');if(!lineIdToken&&!await initLINE())return;const b64=await new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(String(r.result).split(',')[1]||'');r.onerror=rej;r.readAsDataURL(file)});const slots=selected.map(x=>({court:String(x.court),hour:Number(x.hour)}));const bookingId='SM-'+new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Bangkok'}).replaceAll('-','')+'-'+Math.random().toString(36).slice(2,7).toUpperCase();const first=slots[0];const body=new URLSearchParams({action:'book',bookingId,date:$('date').value,court:first.court,hour:String(first.hour),name,phone,remark:$('remark').value.trim(),selectedSlots:JSON.stringify(slots),slipName:file.name,slipType:file.type,slipData:b64,totalAmount:String(slots.length*PRICE),lineUserId});const x=await fetch(API,{method:'POST',body}).then(r=>r.json());if(!x.success)return alert(x.message||'จองไม่สำเร็จ');$('modal').style.display='none';selected=[];await load()}
+async function book(){const name=$('name').value.trim(),phone=$('phone').value.trim(),file=$('slip').files[0];if(!name||!phone||!file)return alert('กรุณากรอกชื่อ เบอร์โทร และแนบสลิป');if(!selected.length)return alert('กรุณาเลือกเวลา');if(!lineUserId){
+  try{
+    if(!liff.isLoggedIn() && !liff.isInClient()){
+      return alert('กรุณาเข้าสู่ระบบ LINE ก่อนยืนยันการจอง');
+    }
+
+    const profile = await liff.getProfile();
+    lineUserId = profile.userId || '';
+
+    if(!lineUserId){
+      return alert('ไม่สามารถยืนยันบัญชี LINE ได้ กรุณารีเฟรชหน้าแล้วลองใหม่');
+    }
+  }catch(e){
+    console.error(e);
+    return alert('ไม่สามารถยืนยันบัญชี LINE ได้ กรุณารีเฟรชหน้าแล้วลองใหม่');
+  }
+}const b64=await new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(String(r.result).split(',')[1]||'');r.onerror=rej;r.readAsDataURL(file)});const slots=selected.map(x=>({court:String(x.court),hour:Number(x.hour)}));const bookingId='SM-'+new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Bangkok'}).replaceAll('-','')+'-'+Math.random().toString(36).slice(2,7).toUpperCase();const first=slots[0];const body=new URLSearchParams({action:'book',bookingId,date:$('date').value,court:first.court,hour:String(first.hour),name,phone,remark:$('remark').value.trim(),selectedSlots:JSON.stringify(slots),slipName:file.name,slipType:file.type,slipData:b64,totalAmount:String(slots.length*PRICE),lineUserId});const x=await fetch(API,{method:'POST',body}).then(r=>r.json());if(!x.success)return alert(x.message||'จองไม่สำเร็จ');$('modal').style.display='none';selected=[];await load()}
 $('book').onclick=book;(async()=>{await initLINE();await load()})();setInterval(load,10000);
 </script></body></html>
