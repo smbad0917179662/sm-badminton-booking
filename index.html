@@ -11,7 +11,29 @@
 <body>
 <header><h1>🏸 S&M แบดมินตัน</h1><p>จองสนามผ่าน LINE • วันธรรมดา 11:00–24:00 • เสาร์-อาทิตย์ 10:00–24:00 • 170 บาท / ชั่วโมง</p></header>
 <main class="wrap"><section class="card"><div class="controls"><div><label>📅 เลือกวันที่</label><div style="display:flex;gap:6px"><button type="button" onclick="changeDate(-1)" style="height:44px;width:44px;border:0;border-radius:10px;background:#e2e8f0;font-size:20px;font-weight:900">◀</button><input id="date" type="date" lang="th" style="flex:1"><button type="button" onclick="changeDate(1)" style="height:44px;width:44px;border:0;border-radius:10px;background:#e2e8f0;font-size:20px;font-weight:900">▶</button></div></div><button id="refresh" class="primary">🔄 รีเฟรช</button></div><div id="lineStatus" class="info">กำลังเชื่อมต่อ LINE...</div></section><section class="card table"><div id="grid" class="grid"></div><div id="loadmsg" class="note">กำลังโหลดข้อมูล...</div><div class="legend">🟢 ว่าง &nbsp; 🔵 เลือกแล้ว &nbsp; ⚪ ไม่ว่าง &nbsp; ⚫ หมดเวลา</div></section><section class="summary"><div class="summary-top"><div><small>รายการที่เลือก</small><div id="summaryText">ยังไม่ได้เลือก</div></div><div><small>ยอดโอน</small><strong id="summaryTotal">0 บาท</strong></div></div><button id="continueBtn" disabled>➡️ ดำเนินการจองและชำระเงิน</button></section></main>
-<div id="modal" class="modal"><div class="box"><div id="formBox"><h2>📝 สรุปการจอง</h2><div id="selectionInfo" class="note"></div><div id="selectedList" class="selected-list"></div><div id="modalTotal" class="total"></div><div class="field"><label>ชื่อผู้จอง *</label><input id="name" placeholder="ชื่อ-นามสกุล"></div><div class="field"><label>เบอร์โทรศัพท์ *</label><input id="phone" inputmode="tel" placeholder="08xxxxxxxx"></div><div class="field"><label>หมายเหตุ</label><input id="remark" placeholder="ถ้ามี"></div><div class="pay"><b>💳 ยอดที่ต้องโอน</b><div id="payAmount" style="font-size:22px;font-weight:900;margin:4px 0"></div><div id="qrBox"><div class="qr-placeholder">กำลังโหลด QR...</div></div><div id="qrBankName" class="note"></div><div class="note">โอนตามยอดนี้ แล้วแนบสลิปก่อนยืนยัน</div></div><div class="slip"><label>📎 แนบสลิปการโอนเงิน *</label><input id="slip" type="file" accept="image/*,application/pdf"><div class="note">รูปภาพหรือ PDF ไม่เกิน 5 MB</div></div><div id="err" class="error"></div><div class="actions"><button id="cancel" class="cancel">ยกเลิก</button><button id="book" class="primary">✅ ยืนยันการจอง</button></div></div></div></div>
+<div id="modal" class="modal"><div class="box"><div id="formBox"><h2>📝 สรุปการจอง</h2><div id="selectionInfo" class="note"></div><div id="selectedList" class="selected-list"></div><div id="modalTotal" class="total"></div><div class="field"><label>ชื่อผู้จอง *</label><input id="name" placeholder="ชื่อ-นามสกุล"></div><div class="field"><label>เบอร์โทรศัพท์ *</label><input id="phone" inputmode="tel" placeholder="08xxxxxxxx"></div><div class="field"><label>หมายเหตุ</label><input id="remark" placeholder="ถ้ามี"></div><div class="pay"><b>💳 ยอดที่ต้องโอน</b><div id="payAmount" style="font-size:22px;font-weight:900;margin:4px 0"></div><div id="qrBox"><div class="qr-placeholder">กำลังโหลด QR...</div></div><div id="qrBankName" class="note"></div><div class="note">โอนตามยอดนี้ แล้วแนบสลิปก่อนยืนยัน</div></div><div class="slip"><label>📎 แนบสลิปการโอนเงิน *</label><input id="slip" type="file" accept="image/*,application/pdf"><div class="note">รูปภาพหรือ PDF ไม่เกิน 5 MB</div></div><div id="err" class="error"></div><div class="actions"><button id="cancel" class="cancel">ยกเลิก</button><button id="book" class="primary">✅ ยืนยันการจอง</button></div></div></div></div><div id="confirmModal" class="modal">
+  <div class="box">
+    <div style="text-align:center">
+      <div style="font-size:46px">✅</div>
+      <h2>จองสำเร็จแล้ว</h2>
+      <div class="note">กรุณาเก็บใบยืนยันการจองนี้ไว้</div>
+    </div>
+
+    <div
+      id="confirmContent"
+      class="selected-list"
+      style="margin-top:15px"
+    ></div>
+
+    <button
+      id="confirmClose"
+      class="primary"
+      style="width:100%;margin-top:15px"
+    >
+      ปิด
+    </button>
+  </div>
+</div>
 <script>
 const LIFF_ID='2011158003-BoC4wAsF';
 const API='https://script.google.com/macros/s/AKfycbweoPikUT3Xfqp2l9Oapg6x3FalxEFJztf9FYTcZHoXrx39tUBUUOD-3RV1HGPel95Azw/exec',PRICE=170;
@@ -47,6 +69,85 @@ async function book(){const name=$('name').value.trim(),phone=$('phone').value.t
     console.error(e);
     return alert('ไม่สามารถยืนยันบัญชี LINE ได้ กรุณารีเฟรชหน้าแล้วลองใหม่');
   }
-}const b64=await new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(String(r.result).split(',')[1]||'');r.onerror=rej;r.readAsDataURL(file)});const slots=selected.map(x=>({court:String(x.court),hour:Number(x.hour)}));const bookingId='SM-'+new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Bangkok'}).replaceAll('-','')+'-'+Math.random().toString(36).slice(2,7).toUpperCase();const first=slots[0];const body=new URLSearchParams({action:'book',bookingId,date:$('date').value,court:first.court,hour:String(first.hour),name,phone,remark:$('remark').value.trim(),selectedSlots:JSON.stringify(slots),slipName:file.name,slipType:file.type,slipData:b64,totalAmount:String(slots.length*PRICE),lineUserId});const x=await fetch(API,{method:'POST',body}).then(r=>r.json());if(!x.success)return alert(x.message||'จองไม่สำเร็จ');$('modal').style.display='none';selected=[];await load()}
+}const b64=await new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(String(r.result).split(',')[1]||'');r.onerror=rej;r.readAsDataURL(file)});const slots=selected.map(x=>({court:String(x.court),hour:Number(x.hour)}));const bookingId='SM-'+new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Bangkok'}).replaceAll('-','')+'-'+Math.random().toString(36).slice(2,7).toUpperCase();const first=slots[0];const body=new URLSearchParams({action:'book',bookingId,date:$('date').value,court:first.court,hour:String(first.hour),name,phone,remark:$('remark').value.trim(),selectedSlots:JSON.stringify(slots),slipName:file.name,slipType:file.type,slipData:b64,totalAmount:String(slots.length*PRICE),lineUserId});const x=await fetch(API,{method:'POST',body}).then(r=>r.json());if(!x.success)return alert(x.message||'จองไม่สำเร็จ');$('modal').style.display='none';
+
+const g=groupSelected();
+
+let confirmHtml='';
+
+Object.keys(g).forEach(c=>{
+  confirmHtml+=`
+    <div class="selected-group">
+      <div class="group-title">
+        🏸 สนาม ${c}
+      </div>
+      ${g[c].sort((a,b)=>a-b).map(h=>`
+        <div class="selected-row">
+          <span>
+            ⏰ ${String(h).padStart(2,'0')}:00–${String(h+1).padStart(2,'0')}:00
+          </span>
+          <b>${PRICE.toLocaleString()} บาท</b>
+        </div>
+      `).join('')}
+    </div>
+  `;
+});
+
+$('confirmContent').innerHTML=`
+  <div class="selected-row">
+    <span>เลขที่การจอง</span>
+    <b>${bookingId}</b>
+  </div>
+
+  <div class="selected-row">
+    <span>วันที่</span>
+    <b>${$('date').value}</b>
+  </div>
+
+  <div class="selected-row">
+    <span>ชื่อผู้จอง</span>
+    <b>${name}</b>
+  </div>
+
+  <div class="selected-row">
+    <span>เบอร์โทร</span>
+    <b>${phone}</b>
+  </div>
+
+  <div style="margin-top:10px">
+    ${confirmHtml}
+  </div>
+
+  <div class="total">
+    รวม ${(
+      slots.length * PRICE
+    ).toLocaleString()} บาท
+  </div>
+
+  <div
+    style="
+      margin-top:12px;
+      padding:10px;
+      border-radius:10px;
+      background:#fff7ed;
+      color:#c2410c;
+      text-align:center;
+      font-weight:800;
+    "
+  >
+    🟡 รอตรวจสอบการชำระเงิน
+  </div>
+`;
+
+$('confirmModal').style.display='flex';
+
+selected=[];
+
+await load();}
+
+$('confirmClose').onclick=()=>{
+  $('confirmModal').style.display='none';
+};
+  
 $('book').onclick=book;(async()=>{await initLINE();await load()})();setInterval(load,10000);
 </script></body></html>
