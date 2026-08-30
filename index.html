@@ -57,7 +57,7 @@ async function load(){const date=$('date').value;try{const x=await fetch(API+'?d
 async function initLINE(){try{await liff.init({liffId:LIFF_ID});if(!liff.isLoggedIn()&&!liff.isInClient()){liff.login();return false}lineIdToken=liff.getIDToken()||'';const p=await liff.getProfile();lineUserId=p.userId||'';$('lineStatus').textContent='🟢 เชื่อมต่อ LINE แล้ว';return true}catch(e){$('lineStatus').textContent='🔴 เชื่อมต่อ LINE ไม่สำเร็จ: '+e.message;return false}}
 async function loadPaymentQR(){const box=$('qrBox'),bank=$('qrBankName');box.innerHTML='<div class="qr-placeholder">กำลังโหลด QR...</div>';try{const x=await fetch(API+'?action=getActivePaymentQR&t='+Date.now(),{cache:'no-store'}).then(r=>r.json());if(!x.success)throw new Error(x.message||'ยังไม่มี QR');const dataUrl=x.dataUrl||x.qr||x.url;if(!dataUrl)throw new Error('ไม่พบข้อมูล QR');paymentQR=dataUrl;box.innerHTML='<img id="paymentQR" alt="QR Code สำหรับชำระเงิน">';$('paymentQR').src=dataUrl;bank.textContent=x.bankName||''}catch(e){paymentQR=null;box.innerHTML='<div class="qr-placeholder">❌ โหลด QR ไม่สำเร็จ</div>'}}
 function changeDate(days){const d=new Date($('date').value+'T12:00:00');d.setDate(d.getDate()+days);const nd=d.toISOString().slice(0,10);if(nd<todayTH)return;$('date').value=nd;selected=[];load()}
-$('date').addEventListener('change',()=>{selected=[];load()});$('date').addEventListener('change',()=>{
+$('date').addEventListener('change',()=>{
   if($('date').value<todayTH){
     $('date').value=todayTH;
     selected=[];
