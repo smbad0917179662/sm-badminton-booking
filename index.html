@@ -84,7 +84,11 @@ async function book(){const name=$('name').value.trim(),phone=$('phone').value.t
     return alert('ไม่สามารถยืนยันบัญชี LINE ได้ กรุณารีเฟรชหน้าแล้วลองใหม่');
   }
 }const b64=await new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(String(r.result).split(',')[1]||'');r.onerror=rej;r.readAsDataURL(file)});const slots=selected.map(x=>({court:String(x.court),hour:Number(x.hour)}));const bookingId='SM-'+new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Bangkok'}).replaceAll('-','')+'-'+Math.random().toString(36).slice(2,7).toUpperCase();const first=slots[0];const body=new URLSearchParams({action:'book',bookingId,date:$('date').value,court:first.court,hour:String(first.hour),name,phone,remark:$('remark').value.trim(),selectedSlots:JSON.stringify(slots),slipName:file.name,slipType:file.type,slipData:b64,totalAmount:String(slots.length*PRICE),lineUserId});$('book').disabled=true;
-$('book').textContent='⏳ กรุณารอสักครู่ กำลังดำเนินการ...';const x=await fetch(API,{method:'POST',body}).then(r=>r.json());if(!x.success)return alert(x.message||'จองไม่สำเร็จ');$('modal').style.display='none';
+$('book').textContent='⏳ กรุณารอสักครู่ กำลังดำเนินการ...';const x=await fetch(API,{method:'POST',body}).then(r=>r.json());if(!x.success){
+  $('book').disabled=false;
+  $('book').textContent='✅ ยืนยันการจอง';
+  return alert(x.message||'จองไม่สำเร็จ');
+}$('modal').style.display='none';
 
 const g=groupSelected();
 
